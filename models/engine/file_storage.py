@@ -34,25 +34,6 @@ class FileStorage:
             return new_dict
         return self.__objects
 
-    def get(self, cls, id):
-        """returns specific object"""
-        if cls is None or id is None:
-            return None
-        if type(id) != str:
-            id = str(id)
-        if cls in classes.values():
-            cls = cls.__name__
-        if cls in classes.keys():
-            key = "{}.{}".format(cls, id)
-            if self.__objects.get(key, None):
-                obj = self.__objects[key]
-                return obj
-        return None
-
-    def count(self, cls=None):
-        count_file = len(self.all(cls))
-        return count_file
-
     def new(self, obj):
         """sets in __objects the obj with key <obj class name>.id"""
         if obj is not None:
@@ -87,3 +68,16 @@ class FileStorage:
     def close(self):
         """call reload() method for deserializing the JSON file to objects"""
         self.reload()
+
+    def get(self, cls, id):
+        """A method to retrieve one object"""
+        if cls not in classes.values():
+            return None
+        items = [x for x in self.__objects.values() if x.id == id]
+        if not items:
+            return None
+        return items[0]
+
+    def count(self, cls=None):
+        """A method to count the number of objects in storage"""
+        return len(self.all(cls))
